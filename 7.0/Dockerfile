@@ -1,7 +1,5 @@
 FROM php:5.4-apache
 
-ENV OWNCLOUD_VERSION 7.0.4
-
 RUN apt-get update && apt-get install -y \
 	bzip2 \
 	g++ \
@@ -21,6 +19,8 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys E3036906AD9F30807351F
 # https://doc.owncloud.org/server/8.1/admin_manual/installation/source_installation.html#prerequisites
 RUN docker-php-ext-install curl gd iconv intl json mbstring mcrypt mysql pgsql simplexml xml xmlwriter zip
 
+ENV OWNCLOUD_VERSION 7.0.4
+
 RUN curl -fsSL -o owncloud.tar.bz2 \
 		"https://download.owncloud.org/community/owncloud-${OWNCLOUD_VERSION}.tar.bz2" \
 	&& curl -fsSL -o owncloud.tar.bz2.asc \
@@ -29,7 +29,3 @@ RUN curl -fsSL -o owncloud.tar.bz2 \
 	&& tar -xjf owncloud.tar.bz2 -C /var/www/html --strip-components=1 \
 	&& rm owncloud.tar.bz2 owncloud.tar.bz2.asc \
 	&& chown -R www-data /var/www/html
-
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-
-CMD ["apache2", "-D", "FOREGROUND"]
