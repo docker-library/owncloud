@@ -2,7 +2,7 @@
 set -e
 
 if [ "$(ls -A /var/www/html)" ]; then
-	cp -R /usr/src/owncloud/* /var/www/html
+	tar cf - --one-file-system -C /usr/src/owncloud . | tar xf -
 	chown -R www-data /var/www/html
 fi
 
