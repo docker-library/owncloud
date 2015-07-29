@@ -10,7 +10,7 @@ fi
 versions=( "${versions[@]%/}" )
 
 for version in "${versions[@]}"; do
-	latest=$(curl -sSL 'https://owncloud.org/changelog/' |tac|tac| grep -o -m 1 "Version ${version}.[[:digit:]]\+" | sed -rn 's/Version (.*)/\1/p')
+	latest=$(curl -sSL 'https://owncloud.org/changelog/' |tac|tac| grep -o -m 1 "\(Version\|Release\) ${version}.[[:digit:]]\+" | sed -rn 's/(Version|Release) (.*)/\2/p')
 	sed -ri -e 's/^(ENV OWNCLOUD_VERSION) .*/\1 '"$latest"'/' "$version/Dockerfile"
 done
 

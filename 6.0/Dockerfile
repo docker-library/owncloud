@@ -19,7 +19,7 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys E3036906AD9F30807351F
 # https://doc.owncloud.org/server/8.1/admin_manual/installation/source_installation.html#prerequisites
 RUN docker-php-ext-install curl gd iconv intl json mbstring mcrypt mysql pgsql simplexml xml xmlwriter zip
 
-ENV OWNCLOUD_VERSION 6.0.6
+ENV OWNCLOUD_VERSION 6.0.9
 VOLUME /var/www/html
 
 RUN curl -fsSL -o owncloud.tar.bz2 \
