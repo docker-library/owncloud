@@ -20,17 +20,16 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys E3036906AD9F30807351F
 RUN docker-php-ext-install curl gd iconv intl json mbstring mcrypt mysql pgsql simplexml xml xmlwriter zip
 
 ENV OWNCLOUD_VERSION 8.1.0
-VOLUME /var/www/html
 
 RUN curl -fsSL -o owncloud.tar.bz2 \
 		"https://download.owncloud.org/community/owncloud-${OWNCLOUD_VERSION}.tar.bz2" \
 	&& curl -fsSL -o owncloud.tar.bz2.asc \
 		"https://download.owncloud.org/community/owncloud-${OWNCLOUD_VERSION}.tar.bz2.asc" \
 	&& gpg --verify owncloud.tar.bz2.asc \
-	&& tar -xjf owncloud.tar.bz2 -C /usr/src/ \
+	&& tar -xjf owncloud.tar.bz2 -C /var/www/html \
+    && chown -R www-data /var/www/html \
 	&& rm owncloud.tar.bz2 owncloud.tar.bz2.asc
 
-COPY docker-entrypoint.sh /entrypoint.sh
+VOLUME /var/www/html
 
-ENTRYPOINT ["/entrypoint.sh"]
 CMD ["apache2-foreground"]
