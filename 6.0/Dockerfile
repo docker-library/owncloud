@@ -2,11 +2,10 @@ FROM php:5.4-apache
 
 RUN apt-get update && apt-get install -y \
 	bzip2 \
-	g++ \
 	libcurl4-openssl-dev \
 	libfreetype6-dev \
 	libicu-dev \
-	libjpeg62-turbo-dev \
+	libjpeg-dev \
 	libmcrypt-dev \
 	libpng12-dev \
 	libpq-dev \
@@ -17,7 +16,8 @@ RUN apt-get update && apt-get install -y \
 RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys E3036906AD9F30807351FAC32D5D5E97F6978A26
 
 # https://doc.owncloud.org/server/8.1/admin_manual/installation/source_installation.html#prerequisites
-RUN docker-php-ext-install curl gd iconv intl json mbstring mcrypt mysql pgsql simplexml xml xmlwriter zip
+RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
+	&& docker-php-ext-install gd intl mbstring mcrypt mysql pdo_mysql pdo_pgsql pgsql zip
 
 ENV OWNCLOUD_VERSION 6.0.9
 VOLUME /var/www/html
