@@ -19,6 +19,8 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys E3036906AD9F30807351F
 RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
 	&& docker-php-ext-install gd intl mbstring mcrypt mysql pdo_mysql pdo_pgsql pgsql zip
 
+RUN a2enmod rewrite
+
 ENV OWNCLOUD_VERSION 8.0.5
 VOLUME /var/www/html
 
