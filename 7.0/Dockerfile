@@ -21,7 +21,7 @@ RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
 
 RUN a2enmod rewrite
 
-ENV OWNCLOUD_VERSION 7.0.7
+ENV OWNCLOUD_VERSION 7.0.8
 VOLUME /var/www/html
 
 RUN curl -fsSL -o owncloud.tar.bz2 \
