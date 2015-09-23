@@ -4,10 +4,14 @@ language: bash
 sudo: 9000
 
 env:
-  - VERSION=8.1
-  - VERSION=8.0
-  - VERSION=7.0
-  - VERSION=6.0
+  - VERSION=8.1 VARIANT=fpm
+  - VERSION=8.1 VARIANT=apache
+  - VERSION=8.0 VARIANT=fpm
+  - VERSION=8.0 VARIANT=apache
+  - VERSION=7.0 VARIANT=fpm
+  - VERSION=7.0 VARIANT=apache
+  - VERSION=6.0 VARIANT=fpm
+  - VERSION=6.0 VARIANT=apache
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
@@ -15,10 +19,10 @@ install:
 before_script:
   - env | sort
   - cd "$VERSION"
-  - image="owncloud:$VERSION"
+  - image="owncloud:${VERSION}${VARIANT:+-$VARIANT}"
 
 script:
-  - docker build -t "$image" .
+  - docker build -t "$image" "${VARIANT}"
   - ~/official-images/test/run.sh "$image"
 
 after_script:
