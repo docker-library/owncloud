@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
 	libpng12-dev \
 	libpq-dev \
 	libxml2-dev \
+	libldap2-dev \
 	&& rm -rf /var/lib/apt/lists/*
 
 #gpg key from https://owncloud.org/owncloud.asc
@@ -30,6 +31,10 @@ RUN { \
 		echo 'opcache.fast_shutdown=1'; \
 		echo 'opcache.enable_cli=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
+
+# LDAP extension
+RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu \
+	&& docker-php-ext-install ldap
 
 # PECL extensions
 RUN pecl install APCu-beta redis memcached \
