@@ -30,13 +30,13 @@ for version in "${versions[@]}"; do
 
 		echo
 		for va in "${versionAliases[@]}"; do
-			echo "$va-$variant: ${url}@${commit} $version/$variant"
-			if [ "${variant}" == "apache" ]; then
-				echo "$va: ${url}@${commit} $version/$variant"
+			if [ "$va" = 'latest' ]; then
+				echo "$variant: ${url}@${commit} $version/$variant"
 			else
-				if [ "$va" == "latest" ]; then
-					echo "$variant: ${url}@${commit} $version/$variant"
-				fi
+				echo "$va-$variant: ${url}@${commit} $version/$variant"
+			fi
+			if [ "$variant" = 'apache' ]; then
+				echo "$va: ${url}@${commit} $version/$variant"
 			fi
 		done
 	done
