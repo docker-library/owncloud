@@ -1,4 +1,4 @@
-# About this Repo
+# owncloud
 
 This is the Git repo of the official Docker image for [owncloud](https://registry.hub.docker.com/_/owncloud/). See the
 Hub page for the full readme on how to use the Docker image and for information
