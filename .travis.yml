@@ -4,6 +4,8 @@ language: bash
 sudo: 9000
 
 env:
+  - VERSION=8.2 VARIANT=fpm
+  - VERSION=8.2 VARIANT=apache
   - VERSION=8.1 VARIANT=fpm
   - VERSION=8.1 VARIANT=apache
   - VERSION=8.0 VARIANT=fpm
