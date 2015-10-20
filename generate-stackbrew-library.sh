@@ -16,6 +16,9 @@ url='git://github.com/docker-library/owncloud'
 
 echo '# maintainer: InfoSiftr <github@infosiftr.com> (@infosiftr)'
 
+echo
+echo '# https://github.com/owncloud/core/wiki/Maintenance-and-Release-Schedule'
+
 for version in "${versions[@]}"; do
 	for variant in apache fpm; do
 		commit="$(cd "$version/$variant" && git log -1 --format='format:%H' -- Dockerfile $(awk 'toupper($1) == "COPY" { for (i = 2; i < NF; i++) { print $i } }' Dockerfile))"
