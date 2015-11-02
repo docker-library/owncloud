@@ -34,7 +34,7 @@ RUN { \
 RUN pecl install APCu-beta \
 	&& docker-php-ext-enable apcu
 
-ENV OWNCLOUD_VERSION 8.0.8
+ENV OWNCLOUD_VERSION 8.0.9
 VOLUME /var/www/html
 
 RUN curl -fsSL -o owncloud.tar.bz2 \

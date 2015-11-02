@@ -30,7 +30,7 @@ RUN { \
 		echo 'opcache.enable_cli=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
-ENV OWNCLOUD_VERSION 7.0.10
+ENV OWNCLOUD_VERSION 7.0.11
 VOLUME /var/www/html
 
 RUN curl -fsSL -o owncloud.tar.bz2 \
