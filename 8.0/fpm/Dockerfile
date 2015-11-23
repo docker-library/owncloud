@@ -31,7 +31,7 @@ RUN { \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 # PECL extensions
-RUN pecl install APCu-beta \
+RUN pecl install APCu \
 	&& docker-php-ext-enable apcu
 
 ENV OWNCLOUD_VERSION 8.0.9
