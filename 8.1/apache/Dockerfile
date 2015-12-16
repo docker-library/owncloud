@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
 	libpng12-dev \
 	libpq-dev \
 	libxml2-dev \
+        ssmtp \
 	&& rm -rf /var/lib/apt/lists/*
 
 #gpg key from https://owncloud.org/owncloud.asc
