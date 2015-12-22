@@ -31,7 +31,7 @@ RUN { \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 # PECL extensions
-RUN pecl install APCu \
+RUN pecl install APCu-4.0.10 \
 	&& docker-php-ext-enable apcu
 
 RUN a2enmod rewrite
