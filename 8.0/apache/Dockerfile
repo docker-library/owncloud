@@ -36,7 +36,7 @@ RUN pecl install APCu-4.0.10 \
 
 RUN a2enmod rewrite
 
-ENV OWNCLOUD_VERSION 8.0.9
+ENV OWNCLOUD_VERSION 8.0.10
 VOLUME /var/www/html
 
 RUN curl -fsSL -o owncloud.tar.bz2 \
