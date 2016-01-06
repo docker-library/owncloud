@@ -35,7 +35,13 @@ RUN { \
 RUN pecl install APCu-4.0.10 redis memcached \
 	&& docker-php-ext-enable apcu redis memcached
 
-RUN a2enmod rewrite
+RUN a2enmod rewrite headers
+
+RUN { \
+		echo 'RequestHeader  edit "If-None-Match" "^\"(.*)-gzip\"$" "\"$1\""'; \
+		echo 'Header  edit "ETag" "^\"(.*[^g][^z][^i][^p])\"$" "\"$1-gzip\""'; \
+	} > /etc/apache2/conf-available/owncloud-deflatespeed.conf \
+	&& a2enconf owncloud-deflatespeed
 
 ENV OWNCLOUD_VERSION 8.2.2
 VOLUME /var/www/html
