@@ -12,9 +12,6 @@ RUN apt-get update && apt-get install -y \
 	libxml2-dev \
 	&& rm -rf /var/lib/apt/lists/*
 
-#gpg key from https://owncloud.org/owncloud.asc
-RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys E3036906AD9F30807351FAC32D5D5E97F6978A26
-
 # https://doc.owncloud.org/server/8.1/admin_manual/installation/source_installation.html#prerequisites
 RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
 	&& docker-php-ext-install gd intl mbstring mcrypt mysql opcache pdo_mysql pdo_pgsql pgsql zip
@@ -39,9 +36,13 @@ RUN curl -fsSL -o owncloud.tar.bz2 \
 		"https://download.owncloud.org/community/owncloud-${OWNCLOUD_VERSION}.tar.bz2" \
 	&& curl -fsSL -o owncloud.tar.bz2.asc \
 		"https://download.owncloud.org/community/owncloud-${OWNCLOUD_VERSION}.tar.bz2.asc" \
-	&& gpg --verify owncloud.tar.bz2.asc \
+	&& export GNUPGHOME="$(mktemp -d)" \
+# gpg key from https://owncloud.org/owncloud.asc
+	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys E3036906AD9F30807351FAC32D5D5E97F6978A26 \
+	&& gpg --batch --verify owncloud.tar.bz2.asc owncloud.tar.bz2 \
+	&& rm -r "$GNUPGHOME" owncloud.tar.bz2.asc \
 	&& tar -xjf owncloud.tar.bz2 -C /usr/src/ \
-	&& rm owncloud.tar.bz2 owncloud.tar.bz2.asc
+	&& rm owncloud.tar.bz2
 
 COPY docker-entrypoint.sh /entrypoint.sh
 
