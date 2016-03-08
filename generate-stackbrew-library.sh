@@ -3,7 +3,8 @@ set -e
 
 declare -A aliases
 aliases=(
-	[8.2]='8 latest'
+	[9.0]='9 latest'
+	[8.2]='8'
 	[7.0]='7'
 	[6.0]='6'
 )
