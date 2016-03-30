@@ -1,5 +1,7 @@
-FROM php:5.6-fpm
+FROM php:7-fpm
 
+# Install dependencies
+# https://doc.owncloud.org/server/8.1/admin_manual/installation/source_installation.html#prerequisites
 RUN apt-get update && apt-get install -y \
 	bzip2 \
 	libcurl4-openssl-dev \
@@ -11,11 +13,41 @@ RUN apt-get update && apt-get install -y \
 	libpng12-dev \
 	libpq-dev \
 	libxml2-dev \
-	&& rm -rf /var/lib/apt/lists/*
-
-# https://doc.owncloud.org/server/8.1/admin_manual/installation/source_installation.html#prerequisites
-RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
-	&& docker-php-ext-install gd exif intl mbstring mcrypt mysql opcache pdo_mysql pdo_pgsql pgsql zip
+	&& rm -rf /var/lib/apt/lists/* \
+	# enable extenions
+	&& docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
+	&& docker-php-ext-install gd exif intl mbstring mcrypt opcache pdo_mysql pdo_pgsql pgsql zip \
+	# self compiled redis
+	&& curl -fsSL 'https://github.com/phpredis/phpredis/archive/php7.tar.gz' -o redis.tar.gz \
+	&& mkdir -p redis \
+	&& tar -xf redis.tar.gz -C redis --strip-components=1 \
+	&& rm redis.tar.gz \
+	&& ( \
+		cd redis \
+		&& phpize \
+		&& ./configure \
+		&& make -j$(nproc) \
+		&& make install \
+	) \
+	&& rm -r redis \
+	&& docker-php-ext-enable redis \
+	# self compiled memcached
+	&& curl -fsSL 'https://github.com/php-memcached-dev/php-memcached/archive/php7.tar.gz' -o memcached.tar.gz \
+	&& mkdir -p memcached \
+	&& tar -xf memcached.tar.gz -C memcached --strip-components=1 \
+	&& rm memcached.tar.gz \
+	&& ( \
+		cd memcached \
+		&& phpize \
+		&& ./configure --disable-memcached-sasl \
+		&& make -j$(nproc) \
+		&& make install \
+	) \
+	&& rm -r memcached \
+	&& docker-php-ext-enable memcached \
+	# pecl extensions
+	&& pecl install APCu \
+	&& docker-php-ext-enable apcu
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
@@ -27,10 +59,6 @@ RUN { \
 		echo 'opcache.fast_shutdown=1'; \
 		echo 'opcache.enable_cli=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
-
-# PECL extensions
-RUN pecl install APCu-4.0.10 redis memcached \
-	&& docker-php-ext-enable apcu redis memcached
 
 ENV OWNCLOUD_VERSION 9.0.0
 VOLUME /var/www/html
