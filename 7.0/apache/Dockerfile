@@ -42,7 +42,10 @@ RUN curl -fsSL -o owncloud.tar.bz2 \
 	&& gpg --batch --verify owncloud.tar.bz2.asc owncloud.tar.bz2 \
 	&& rm -r "$GNUPGHOME" owncloud.tar.bz2.asc \
 	&& tar -xjf owncloud.tar.bz2 -C /usr/src/ \
-	&& rm owncloud.tar.bz2
+	&& rm owncloud.tar.bz2 \
+# make owncloud cli occ usable via docker exec
+	&& echo '#!/bin/bash\nsu www-data -s /bin/bash -c "php /var/www/html/occ $*"' > /usr/local/sbin/occ \
+	&& chmod +x /usr/local/sbin/occ
 
 COPY docker-entrypoint.sh /entrypoint.sh
 
