@@ -37,7 +37,7 @@ RUN set -ex \
 
 RUN a2enmod rewrite
 
-ENV OWNCLOUD_VERSION 9.0.2
+ENV OWNCLOUD_VERSION 9.0.3
 VOLUME /var/www/html
 
 RUN curl -fsSL -o owncloud.tar.bz2 \
