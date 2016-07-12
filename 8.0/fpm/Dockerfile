@@ -6,17 +6,17 @@ RUN apt-get update && apt-get install -y \
 	libfreetype6-dev \
 	libicu-dev \
 	libjpeg-dev \
+	libldap2-dev \
 	libmcrypt-dev \
 	libpng12-dev \
 	libpq-dev \
 	libxml2-dev \
-	libldap2-dev \
 	&& rm -rf /var/lib/apt/lists/*
 
 # https://doc.owncloud.org/server/8.1/admin_manual/installation/source_installation.html#prerequisites
 RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
 	&& docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
-	&& docker-php-ext-install gd exif intl mbstring mcrypt mysql opcache pdo_mysql pdo_pgsql pgsql zip ldap
+	&& docker-php-ext-install exif gd intl ldap mbstring mcrypt mysql opcache pdo_mysql pdo_pgsql pgsql zip
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
