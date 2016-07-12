@@ -1,4 +1,4 @@
-FROM php:5.6-apache
+FROM php:5.6-%%VARIANT%%
 
 RUN apt-get update && apt-get install -y \
 	bzip2 \
@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
 	libjpeg-dev \
 	libldap2-dev \
 	libmcrypt-dev \
+	libmemcached-dev \
 	libpng12-dev \
 	libpq-dev \
 	libxml2-dev \
@@ -33,9 +34,11 @@ RUN a2enmod rewrite
 # PECL extensions
 RUN set -ex \
 	&& pecl install APCu-4.0.10 \
-	&& docker-php-ext-enable apcu
+	&& pecl install memcached-2.2.0 \
+	&& pecl install redis-2.2.8 \
+	&& docker-php-ext-enable apcu memcached redis
 
-ENV OWNCLOUD_VERSION 8.0.13
+ENV OWNCLOUD_VERSION %%VERSION%%
 VOLUME /var/www/html
 
 RUN curl -fsSL -o owncloud.tar.bz2 \
@@ -53,4 +56,4 @@ RUN curl -fsSL -o owncloud.tar.bz2 \
 COPY docker-entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["apache2-foreground"]
+CMD ["%%CMD%%"]
