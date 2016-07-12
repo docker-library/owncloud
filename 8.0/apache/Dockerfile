@@ -18,7 +18,6 @@ RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
 	&& docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
 	&& docker-php-ext-install gd exif intl mbstring mcrypt mysql opcache pdo_mysql pdo_pgsql pgsql zip ldap
 
-
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
 RUN { \
@@ -29,12 +28,12 @@ RUN { \
 		echo 'opcache.fast_shutdown=1'; \
 		echo 'opcache.enable_cli=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
+RUN a2enmod rewrite
 
 # PECL extensions
-RUN pecl install APCu-4.0.10 \
+RUN set -ex \
+	&& pecl install APCu-4.0.10 \
 	&& docker-php-ext-enable apcu
-
-RUN a2enmod rewrite
 
 ENV OWNCLOUD_VERSION 8.0.13
 VOLUME /var/www/html
