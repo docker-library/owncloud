@@ -22,7 +22,7 @@ before_script:
   - image="owncloud:${VERSION}${VARIANT:+-$VARIANT}"
 
 script:
-  - docker build -t "$image" "${VARIANT}"
+  - travis_retry docker build -t "$image" "${VARIANT}"
   - ~/official-images/test/run.sh "$image"
 
 after_script:
