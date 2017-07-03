@@ -2,7 +2,7 @@
 set -e
 
 declare -A unsupportedModules=(
-	[8.0]='memcached redis'
+	#[8.0]='memcached redis'
 )
 declare -A cmd=(
 	[apache]='apache2-foreground'
