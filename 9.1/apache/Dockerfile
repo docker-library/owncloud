@@ -1,23 +1,26 @@
-FROM php:5.6-apache
+# https://owncloud.com/minimum-product-requirements/ ("5.6 recommended")
+# https://doc.owncloud.org/server/10.0/admin_manual/installation/system_requirements.html ("PHP (5.6+ or 7.0+)")
+# https://doc.owncloud.org/server/9.0/admin_manual/installation/system_requirements.html ("PHP 7.0")
+FROM php:7.0-apache
 
-RUN apt-get update && apt-get install -y \
-	bzip2 \
-	libcurl4-openssl-dev \
-	libfreetype6-dev \
-	libicu-dev \
-	libjpeg-dev \
-	libldap2-dev \
-	libmcrypt-dev \
-	libmemcached-dev \
-	libpng12-dev \
-	libpq-dev \
-	libxml2-dev \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+		bzip2 \
+		libcurl4-openssl-dev \
+		libfreetype6-dev \
+		libicu-dev \
+		libjpeg-dev \
+		libldap2-dev \
+		libmcrypt-dev \
+		libmemcached-dev \
+		libpng12-dev \
+		libpq-dev \
+		libxml2-dev \
 	&& rm -rf /var/lib/apt/lists/*
 
 # https://doc.owncloud.org/server/8.1/admin_manual/installation/source_installation.html#prerequisites
 RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
 	&& docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
-	&& docker-php-ext-install exif gd intl ldap mbstring mcrypt mysql opcache pdo_mysql pdo_pgsql pgsql zip
+	&& docker-php-ext-install exif gd intl ldap mbstring mcrypt opcache pdo pdo_mysql pdo_pgsql pgsql zip
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
@@ -33,9 +36,9 @@ RUN a2enmod rewrite
 
 # PECL extensions
 RUN set -ex \
-	&& pecl install APCu-4.0.10 \
-	&& pecl install memcached-2.2.0 \
-	&& pecl install redis-2.2.8 \
+	&& pecl install APCu-5.1.8 \
+	&& pecl install memcached-3.0.3 \
+	&& pecl install redis-3.1.2 \
 	&& docker-php-ext-enable apcu memcached redis
 
 ENV OWNCLOUD_VERSION 9.1.6
@@ -53,7 +56,7 @@ RUN curl -fsSL -o owncloud.tar.bz2 \
 	&& tar -xjf owncloud.tar.bz2 -C /usr/src/ \
 	&& rm owncloud.tar.bz2
 
-COPY docker-entrypoint.sh /entrypoint.sh
-
-ENTRYPOINT ["/entrypoint.sh"]
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN ln -s usr/local/bin/docker-entrypoint.sh /entrypoint.sh # backwards compat
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["apache2-foreground"]

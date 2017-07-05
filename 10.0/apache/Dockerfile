@@ -1,7 +1,7 @@
 # https://owncloud.com/minimum-product-requirements/ ("5.6 recommended")
 # https://doc.owncloud.org/server/10.0/admin_manual/installation/system_requirements.html ("PHP (5.6+ or 7.0+)")
 # https://doc.owncloud.org/server/9.0/admin_manual/installation/system_requirements.html ("PHP 7.0")
-FROM php:7.0-fpm
+FROM php:7.0-apache
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
 		bzip2 \
@@ -32,6 +32,7 @@ RUN { \
 		echo 'opcache.fast_shutdown=1'; \
 		echo 'opcache.enable_cli=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
+RUN a2enmod rewrite
 
 # PECL extensions
 RUN set -ex \
@@ -40,7 +41,7 @@ RUN set -ex \
 	&& pecl install redis-3.1.2 \
 	&& docker-php-ext-enable apcu memcached redis
 
-ENV OWNCLOUD_VERSION 9.1.6
+ENV OWNCLOUD_VERSION 10.0.2
 VOLUME /var/www/html
 
 RUN curl -fsSL -o owncloud.tar.bz2 \
@@ -56,6 +57,5 @@ RUN curl -fsSL -o owncloud.tar.bz2 \
 	&& rm owncloud.tar.bz2
 
 COPY docker-entrypoint.sh /usr/local/bin/
-RUN ln -s usr/local/bin/docker-entrypoint.sh /entrypoint.sh # backwards compat
 ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["php-fpm"]
+CMD ["apache2-foreground"]
