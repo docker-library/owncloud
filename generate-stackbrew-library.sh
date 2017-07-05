@@ -2,7 +2,8 @@
 set -eu
 
 declare -A aliases=(
-	[9.1]='9 latest'
+	[10.0]='10 latest'
+	[9.1]='9'
 )
 
 self="$(basename "$BASH_SOURCE")"
@@ -10,6 +11,9 @@ cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
 versions=( */ )
 versions=( "${versions[@]%/}" )
+
+# sort version numbers with highest first
+IFS=$'\n'; versions=( $(echo "${versions[*]}" | sort -rV) ); unset IFS
 
 # get the most recent commit which modified any of "$@"
 fileCommit() {

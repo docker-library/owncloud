@@ -40,7 +40,7 @@ RUN set -ex \
 	&& pecl install redis-3.1.2 \
 	&& docker-php-ext-enable apcu memcached redis
 
-ENV OWNCLOUD_VERSION 9.1.6
+ENV OWNCLOUD_VERSION 10.0.2
 VOLUME /var/www/html
 
 RUN curl -fsSL -o owncloud.tar.bz2 \
@@ -56,6 +56,5 @@ RUN curl -fsSL -o owncloud.tar.bz2 \
 	&& rm owncloud.tar.bz2
 
 COPY docker-entrypoint.sh /usr/local/bin/
-RUN ln -s usr/local/bin/docker-entrypoint.sh /entrypoint.sh # backwards compat
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["php-fpm"]

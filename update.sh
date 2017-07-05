@@ -1,9 +1,6 @@
 #!/bin/bash
 set -e
 
-declare -A unsupportedModules=(
-	#[8.0]='memcached redis'
-)
 declare -A cmd=(
 	[apache]='apache2-foreground'
 	[fpm]='php-fpm'
@@ -24,23 +21,18 @@ for version in "${versions[@]}"; do
 	for variant in apache fpm; do
 		cp Dockerfile.template "$version/$variant/Dockerfile"
 
-		sed -ri -e '
-			s/%%VARIANT%%/'"$variant"'/;
-			s/%%VERSION%%/'"$latest"'/;
-			s/%%CMD%%/'"${cmd[$variant]}"'/;
-		' "$version/$variant/Dockerfile"
-
-		# TODO remove hacky unsupportedModules list when 8.0 is eol
-		for mod in ${unsupportedModules[$version]}; do
-			sed -ri -e '
-				/pecl install '"$mod"'/Id;
-				/lib'"$mod"'/Id;
-				s/(docker-php-ext-enable.*) '"$mod"'/\1/;
-			' "$version/$variant/Dockerfile"
-		done
+		sed -ri \
+			-e 's/%%VARIANT%%/'"$variant"'/' \
+			-e 's/%%VERSION%%/'"$latest"'/' \
+			-e 's/%%CMD%%/'"${cmd[$variant]}"'/' \
+			"$version/$variant/Dockerfile"
 
 		if [ "$variant" = 'fpm' ]; then
 			sed -ri -e '/a2enmod/d' "$version/$variant/Dockerfile"
+		fi
+
+		if [[ "$version" != 9.* ]]; then
+			sed -ri -e '/^RUN ln.*docker-entrypoint.*backwards compat/d' "$version/$variant/Dockerfile"
 		fi
 
 		travisEnv='\n  - VERSION='"$version"' VARIANT='"$variant$travisEnv"
