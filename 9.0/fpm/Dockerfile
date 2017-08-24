@@ -18,9 +18,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	&& rm -rf /var/lib/apt/lists/*
 
 # https://doc.owncloud.org/server/8.1/admin_manual/installation/source_installation.html#prerequisites
-RUN docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
-	&& docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
-	&& docker-php-ext-install exif gd intl ldap mbstring mcrypt opcache pdo pdo_mysql pdo_pgsql pgsql zip
+RUN set -ex; \
+	docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr; \
+	debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
+	docker-php-ext-configure ldap --with-libdir="lib/$debMultiarch"; \
+	docker-php-ext-install exif gd intl ldap mbstring mcrypt opcache pdo pdo_mysql pdo_pgsql pgsql zip
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
