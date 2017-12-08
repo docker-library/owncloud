@@ -42,7 +42,7 @@ RUN set -ex \
 	&& pecl install redis-3.1.2 \
 	&& docker-php-ext-enable apcu memcached redis
 
-ENV OWNCLOUD_VERSION 10.0.3
+ENV OWNCLOUD_VERSION 10.0.4
 VOLUME /var/www/html
 
 RUN curl -fsSL -o owncloud.tar.bz2 \
