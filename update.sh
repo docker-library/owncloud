@@ -1,5 +1,5 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -Eeuo pipefail
 
 declare -A cmd=(
 	[apache]='apache2-foreground'
@@ -16,16 +16,26 @@ versions=( "${versions[@]%/}" )
 
 travisEnv=
 for version in "${versions[@]}"; do
-	latest=$(curl -sSL 'https://owncloud.org/changelog/' |tac|tac| grep -o -m 1 "\(Version\|Release\) ${version}.[[:digit:]]\+" | sed -rn 's/(Version|Release) (.*)/\2/p')
+	changelog='https://owncloud.org/changelog/server/'
+	case "$version" in
+		9.*) changelog='https://owncloud.org/changelog/server/v9/' ;;
+	esac
+
+	latest="$(
+		curl -fsSL "$changelog" \
+			| tac|tac \
+			| grep -Eom 1 "(<h2>|Version )${version}.[0-9.]+[ ]" \
+			| sed -rn 's/(<h2>|Version )(.+)[ ]/\2/p'
+	)"
+	echo "$version: $latest"
 
 	for variant in apache fpm; do
-		cp Dockerfile.template "$version/$variant/Dockerfile"
-
-		sed -ri \
+		sed -r \
 			-e 's/%%VARIANT%%/'"$variant"'/' \
 			-e 's/%%VERSION%%/'"$latest"'/' \
 			-e 's/%%CMD%%/'"${cmd[$variant]}"'/' \
-			"$version/$variant/Dockerfile"
+			Dockerfile.template \
+			> "$version/$variant/Dockerfile"
 
 		if [ "$variant" = 'fpm' ]; then
 			sed -ri -e '/a2enmod/d' "$version/$variant/Dockerfile"
