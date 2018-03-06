@@ -14,25 +14,41 @@ if [ ${#versions[@]} -eq 0 ]; then
 fi
 versions=( "${versions[@]%/}" )
 
+allVersions="$(
+	git ls-remote --tags https://github.com/owncloud/core.git \
+		| cut -d/ -f3- \
+		| cut -d^ -f1 \
+		| grep -E '^v[0-9]' \
+		| cut -dv -f2- \
+		| sort -ruV
+)"
+
 travisEnv=
 for version in "${versions[@]}"; do
-	changelog='https://owncloud.org/changelog/server/'
-	case "$version" in
-		9.*) changelog='https://owncloud.org/changelog/server/v9/' ;;
-	esac
+	fullVersion=
+	sha256=
+	for tryVersion in $(
+		grep -E '^'"$version"'[.]' <<<"$allVersions" \
+			| grep -viE 'alpha|beta|rc'
+	); do
+		if sha256="$(wget -qO- --timeout=1 "https://download.owncloud.org/community/owncloud-${tryVersion}.tar.bz2.sha256")" && [ -n "$sha256" ]; then
+			sha256="${sha256%% *}"
+			fullVersion="$tryVersion"
+			break
+		fi
+	done
+	if [ -z "$fullVersion" ]; then
+		echo >&2 "warning: cannot find full version for $version"
+		continue
+	fi
 
-	latest="$(
-		curl -fsSL "$changelog" \
-			| tac|tac \
-			| grep -Eom 1 "(<h2>|Version )${version}.[0-9.]+[ ]" \
-			| sed -rn 's/(<h2>|Version )(.+)[ ]/\2/p'
-	)"
-	echo "$version: $latest"
+	echo "$version: $fullVersion"
 
 	for variant in apache fpm; do
 		sed -r \
 			-e 's/%%VARIANT%%/'"$variant"'/' \
-			-e 's/%%VERSION%%/'"$latest"'/' \
+			-e 's/%%VERSION%%/'"$fullVersion"'/' \
+			-e 's/%%SHA256%%/'"$sha256"'/' \
 			-e 's/%%CMD%%/'"${cmd[$variant]}"'/' \
 			Dockerfile.template \
 			> "$version/$variant/Dockerfile"
