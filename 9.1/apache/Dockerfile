@@ -56,8 +56,8 @@ RUN set -ex \
 	&& pecl install redis-3.1.2 \
 	&& docker-php-ext-enable apcu memcached redis
 
-ENV OWNCLOUD_VERSION 9.1.6
-ENV OWNCLOUD_SHA256 3268a989e586a0f7bd67d4c6ac8dbf3326755bbcfcffdcc8eca6a32090410ed5
+ENV OWNCLOUD_VERSION 9.1.7
+ENV OWNCLOUD_SHA256 1fdd9176547d9982532e3a96f1fa669123a2a54fee50e8a5e03b3cbf254daefb
 VOLUME /var/www/html
 
 RUN set -eux; \
