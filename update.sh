@@ -36,6 +36,8 @@ for version in "${versions[@]}"; do
 			fullVersion="$tryVersion"
 			break
 		fi
+		# TODO determine a better way to handle "download.owncloud.org" failures (so that we don't equate the download server having a temporary hiccup the same as the version not being published yet)
+		break
 	done
 	if [ -z "$fullVersion" ]; then
 		echo >&2 "warning: cannot find full version for $version"
