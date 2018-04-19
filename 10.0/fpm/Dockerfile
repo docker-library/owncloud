@@ -31,7 +31,6 @@ RUN set -ex; \
 		mcrypt \
 		opcache \
 		pcntl \
-		pdo \
 		pdo_mysql \
 		pdo_pgsql \
 		pgsql \
