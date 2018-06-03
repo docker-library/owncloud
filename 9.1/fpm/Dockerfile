@@ -49,11 +49,14 @@ RUN { \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 # PECL extensions
-RUN set -ex \
-	&& pecl install APCu-5.1.8 \
-	&& pecl install memcached-3.0.3 \
-	&& pecl install redis-3.1.2 \
-	&& docker-php-ext-enable apcu memcached redis
+RUN set -ex; \
+	pecl install APCu-5.1.11; \
+	pecl install memcached-3.0.4; \
+	pecl install redis-3.1.6; \
+	docker-php-ext-enable \
+		apcu \
+		memcached \
+		redis
 
 ENV OWNCLOUD_VERSION 9.1.8
 ENV OWNCLOUD_SHA256 2b688327a2f986236e14b81dffcf684f730f61946d8035e99a6d032083c1ef19
