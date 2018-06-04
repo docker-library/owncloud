@@ -50,11 +50,14 @@ RUN { \
 RUN a2enmod rewrite
 
 # PECL extensions
-RUN set -ex \
-	&& pecl install APCu-5.1.8 \
-	&& pecl install memcached-3.0.3 \
-	&& pecl install redis-3.1.2 \
-	&& docker-php-ext-enable apcu memcached redis
+RUN set -ex; \
+	pecl install APCu-5.1.11; \
+	pecl install memcached-3.0.4; \
+	pecl install redis-3.1.6; \
+	docker-php-ext-enable \
+		apcu \
+		memcached \
+		redis
 
 ENV OWNCLOUD_VERSION 10.0.8
 ENV OWNCLOUD_SHA256 9eef77a171cf69fc89b0628b083b4b1dd15eec375599c7eb5ac0b6d37ab6f903
