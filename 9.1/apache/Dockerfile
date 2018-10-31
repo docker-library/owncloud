@@ -1,6 +1,9 @@
-# https://owncloud.com/minimum-product-requirements/ ("5.6 recommended")
-# https://doc.owncloud.org/server/10.0/admin_manual/installation/system_requirements.html ("PHP (5.6+ or 7.0+)")
-# https://doc.owncloud.org/server/9.0/admin_manual/installation/system_requirements.html ("PHP 7.0")
+#
+# NOTE: THIS DOCKERFILE IS GENERATED VIA "update.sh"
+#
+# PLEASE DO NOT EDIT IT DIRECTLY.
+#
+
 FROM php:7.0-apache
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -29,7 +32,6 @@ RUN set -ex; \
 		gd \
 		intl \
 		ldap \
-		mbstring \
 		mcrypt \
 		opcache \
 		pcntl \
