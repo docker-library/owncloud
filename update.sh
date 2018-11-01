@@ -6,6 +6,24 @@ declare -A cmd=(
 	[fpm]='php-fpm'
 )
 
+# https://doc.owncloud.org/server/10.0/admin_manual/installation/system_requirements.html  ("*We strongly encourage you to migrate to PHP 7.2.")
+# https://doc.owncloud.org/server/9.0/admin_manual/installation/system_requirements.html ("PHP 7.0")
+defaultPhpVersion='7.2'
+declare -A phpVersion=(
+	[9.1]='7.0'
+)
+
+generated_warning() {
+	cat <<-EOH
+		#
+		# NOTE: THIS DOCKERFILE IS GENERATED VIA "update.sh"
+		#
+		# PLEASE DO NOT EDIT IT DIRECTLY.
+		#
+
+	EOH
+}
+
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 #Supported Versions found from Production Channel https://owncloud.org/release-channels/
 versions=( "$@" )
@@ -47,20 +65,23 @@ for version in "${versions[@]}"; do
 	echo "$version: $fullVersion"
 
 	for variant in apache fpm; do
-		sed -r \
-			-e 's/%%VARIANT%%/'"$variant"'/' \
+		{ generated_warning; cat Dockerfile.template; } > "$version/$variant/Dockerfile"
+		sed -ri \
+			-e 's/%%VARIANT%%/'"${phpVersion[$version]:-$defaultPhpVersion}-$variant"'/' \
 			-e 's/%%VERSION%%/'"$fullVersion"'/' \
 			-e 's/%%SHA256%%/'"$sha256"'/' \
 			-e 's/%%CMD%%/'"${cmd[$variant]}"'/' \
-			Dockerfile.template \
-			> "$version/$variant/Dockerfile"
+			"$version/$variant/Dockerfile"
 
 		if [ "$variant" = 'fpm' ]; then
 			sed -ri -e '/a2enmod/d' "$version/$variant/Dockerfile"
 		fi
 
 		if [[ "$version" != 9.* ]]; then
-			sed -ri -e '/^RUN ln.*docker-entrypoint.*backwards compat/d' "$version/$variant/Dockerfile"
+			sed -ri \
+				-e '/^RUN ln.*docker-entrypoint.*backwards compat/d' \
+				-e '/mcrypt/d' \
+				"$version/$variant/Dockerfile"
 		fi
 
 		travisEnv='\n  - VERSION='"$version"' VARIANT='"$variant$travisEnv"
