@@ -70,7 +70,7 @@ RUN set -eux; \
 	echo "$OWNCLOUD_SHA256 *owncloud.tar.bz2" | sha256sum -c -; \
 	export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://owncloud.org/owncloud.asc
-	gpg --keyserver ha.pool.sks-keyservers.net --recv-keys E3036906AD9F30807351FAC32D5D5E97F6978A26; \
+	gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys E3036906AD9F30807351FAC32D5D5E97F6978A26; \
 	gpg --batch --verify owncloud.tar.bz2.asc owncloud.tar.bz2; \
 	command -v gpgconf && gpgconf --kill all || :; \
 	rm -r "$GNUPGHOME" owncloud.tar.bz2.asc; \
