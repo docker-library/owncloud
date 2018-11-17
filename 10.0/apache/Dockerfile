@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		libpq-dev \
 		libxml2-dev \
 		unzip \
+		smbclient \
 	&& rm -rf /var/lib/apt/lists/*
 
 # https://doc.owncloud.org/server/8.1/admin_manual/installation/source_installation.html#prerequisites
